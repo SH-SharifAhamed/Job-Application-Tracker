@@ -1,215 +1,189 @@
-let filter = "ALL";
-let jobs = [
-  {
-    id: 1,
-    company: "REVE Systems",
-    role: "React Native Developer",
-    location: "Remote",
-    salary: "$130k - $175k",
-    status: "NOT APPLIED",
-    description:
-      "Build cross-platform mobile applications using React Native. Work on products used by millions of users worldwide.",
-  },
-  {
-    id: 2,
-    company: "Enosis Solutions",
-    role: "Web Designer",
-    location: "Remote • Full-time",
-    salary: "$80k - $120k",
-    status: "NOT APPLIED",
-    description:
-      "Create stunning web experiences for high-profile clients. Must have portfolio and experience with modern web design trends.",
-  },
-  {
-    id: 3,
-    company: "DataViz Solutions",
-    role: "Data Specialist",
-    location: "Full-time",
-    salary: "$125k - $165k",
-    status: "NOT APPLIED",
-    description:
-      "Transform complex data into compelling visualizations. Required skills: D3.js, React, and strong analytical thinking.",
-  },
-  {
-    id: 4,
-    company: "CloudFirst Inc",
-    role: "Backend Developer",
-    location: "Remote",
-    salary: "$140k - $190k",
-    status: "NOT APPLIED",
-    description:
-      "Design and maintain scalable backend systems using Python and AWS. Work with modern DevOps practices and cloud infrastructure.",
-  },
-  {
-    id: 5,
-    company: "Innovation Labs",
-    role: "UI/UX Engineer",
-    location: "Remote • Full-time",
-    salary: "$100k - $150k",
-    status: "NOT APPLIED",
-    description:
-      "Create beautiful and functional user interfaces for our suite of products. Strong design skills and frontend development expertise required.",
-  },
-  {
-    id: 6,
-    company: "MegaCorp Solutions",
-    role: "JS Developer",
-    location: "Full-time",
-    salary: "$130k - $170k",
-    status: "NOT APPLIED",
-    description:
-      "Build enterprise applications with JavaScript and modern frameworks. We offer competitive compensation, health insurance, and professional development opportunities.",
-  },
-  {
-    id: 7,
-    company: "StartupXYZ",
-    role: "Full Stack Developer",
-    location: "Remote",
-    salary: "$120k - $160k",
-    status: "NOT APPLIED",
-    description:
-      "Join our fast-growing startup and work on our core platform. Experience with Node.js and React required. Great benefits and equity package included.",
-  },
-  {
-    id: 8,
-    company: "TechCorp Industries",
-    role: "Senior Frontend Developer",
-    location: "Full-time",
-    salary: "$130k - $175k",
-    status: "NOT APPLIED",
-    description:
-      "We are looking for an experienced Frontend Developer to build scalable web applications using React and TypeScript. You will work with a talented team on cutting-edge projects.",
-  },
-];
+let currentTab = "all";
 
-const container = document.getElementById("jobContainer");
 
-function renderJobs() {
-  container.innerHTML = "";
-  let filteredJobs = jobs;
+// Available job button toggoling variable
+const tabActive = ["bg-blue-600", "text-white", "border-navy"];
+const tabInactive = ["bg-gray-300", "text-slate-700", "border-navy"];
 
-  if (filter !== "ALL") {
-    filteredJobs = jobs.filter((j) => j.status === filter);
-  }
+// interview, reject button variable
+const allContainer = document.getElementById("jobs-container");
+const interviewContainer = document.getElementById("interview-container");
+const rejectContainer = document.getElementById("reject-container");
 
-  if (filteredJobs.length === 0) {
-    container.innerHTML = `
-      <div class="bg-white p-16 rounded-lg shadow text-center">
-        <div class="text-blue-400 text-6xl mb-6">
-          <i class="fa-regular fa-file-lines"></i>
-        </div>
-        <h3 class="text-xl font-semibold text-[#1e3a8a] mb-2">
-          No jobs available
-        </h3>
-        <p class="text-gray-500">
-          Check back soon for new job opportunities
-        </p>
-      </div>
-    `;
-    updateCounts();
-    return;
-  }
+// Empty statas
+const emptyStatas = document.getElementById("empty-state");
 
-  filteredJobs.forEach((job) => {
-    const card = document.createElement("div");
-    card.className = "bg-white p-6 rounded-lg shadow";
 
-    card.innerHTML = `
-      <div class="flex justify-between items-start">
-        <div>
-          <h3 class="font-bold text-[#1e3a8a]">${job.company}</h3>
-          <p class="text-gray-500">${job.role}</p>
-        </div>
+// Available job button toggoling function
+function switchTab(tab) {
+     const tabs = ["all", "interview", "rejected"];
 
-        <button onclick="deleteJob(${job.id})"
-          class="w-8 h-8 flex items-center justify-center rounded-full border text-gray-500 hover:text-red-500">
-          <i class="fa-regular fa-trash-can"></i>
-        </button>
-      </div>
+     currentTab = tab;
 
-      <p class="text-sm text-gray-400 mt-3">
-        ${job.location} • ${job.salary}
-      </p>
+     for (const t of tabs) {
+          const tabName = document.getElementById("tab-" + t);
 
-      <span class="inline-block mt-3 px-3 py-1 text-sm rounded
-        ${
-          job.status === "INTERVIEW"
-            ? "bg-green-100 text-green-600"
-            : job.status === "REJECTED"
-              ? "bg-red-100 text-red-600"
-              : "bg-blue-100 text-blue-600"
-        }">
-        ${job.status}
-      </span>
+          if (t === tab) {
+               tabName.classList.remove(...tabInactive);
+               tabName.classList.add(...tabActive);
+          }
 
-      <p class="text-gray-600 mt-3 text-sm">
-        ${job.description}
-      </p>
+          else {
+               tabName.classList.remove(...tabActive);
+               tabName.classList.add(...tabInactive);
+          }
+     }
 
-      <div class="mt-4 space-x-3">
-        <button onclick="updateStatus(${job.id}, 'INTERVIEW')"
-          class="px-4 py-2 border border-green-500 text-green-500 rounded">
-          Interview
-        </button>
 
-        <button onclick="updateStatus(${job.id}, 'REJECTED')"
-          class="px-4 py-2 border border-red-500 text-red-500 rounded">
-          Rejected
-        </button>
-      </div>
-    `;
-    container.appendChild(card);
-  });
+     const pages = [allContainer, interviewContainer, rejectContainer];
 
-  updateCounts();
+
+     for (const section of pages) {
+          section.classList.add("hidden");
+
+     }
+
+     emptyStatas.classList.add("hidden");
+
+     currentTab = tab;
+
+     if (currentTab === "all") {
+          allContainer.classList.remove("hidden");
+          if (allContainer.children.length < 1) {
+               emptyStatas.classList.remove("hidden");
+          }
+          interviewContainer.classList.add("hidden");
+     }
+     else if (currentTab === "interview") {
+          interviewContainer.classList.remove("hidden");
+          if (interviewContainer.children.length < 1) {
+               emptyStatas.classList.remove("hidden");
+          }
+          allContainer.classList.add("hidden");
+          rejectContainer.classList.add("hidden");
+     }
+     else if (currentTab === "rejected") {
+          rejectContainer.classList.remove("hidden");
+          if (rejectContainer.children.length < 1) {
+               emptyStatas.classList.remove("hidden");
+          }
+          allContainer.classList.add("hidden");
+          interviewContainer.classList.add("hidden");
+     }
+
+     updateStats();
+
 }
 
-function updateStatus(id, status) {
-  const job = jobs.find((j) => j.id === id);
-  job.status = status;
-  renderJobs();
+
+// update stats
+const totalStat = document.getElementById("stat-total");
+const interviewStat = document.getElementById("stat-interview");
+const rejectStat = document.getElementById("stat-reject");
+
+const availableStat = document.getElementById("available");
+
+totalStat.innerHTML = allContainer.children.length;
+
+
+switchTab(currentTab);
+
+
+// Job status update
+
+document.getElementById("jobs-container").addEventListener("click", function (event) {
+
+     const clickedElement = event.target;
+     const card = clickedElement.closest(".card");
+     const paent = card.parentNode;
+     const status = card.querySelector(".status");
+
+     if (clickedElement.classList.contains("interview")) {
+          status.innerText = "INTERVIEW";
+          interviewContainer.appendChild(card);
+     }
+     if (clickedElement.classList.contains("rejected")) {
+          status.innerText = "REJECTED";
+          rejectContainer.appendChild(card);
+     }
+     if (clickedElement.classList.contains("delete")) {
+          parent.removeChild(card);
+     }
+});
+
+// update stats function
+
+function updateStats() {
+     const counts = {
+          all: allContainer.children.length,
+          interview: interviewContainer.children.length,
+          rejected: rejectContainer.children.length
+     }
+
+     totalStat.innerText = counts.all;
+     interviewStat.innerText = counts.interview;
+     rejectStat.innerText = counts.rejected;
+
+     availableStat.innerText = counts[currentTab] + " jobs";
+
+     if (counts[currentTab] < 1) {
+          emptyStatas.classList.remove("hidden");
+     }
+     else {
+          emptyStatas.classList.add("hidden");
+     }
 }
 
-function deleteJob(id) {
-  jobs = jobs.filter((j) => j.id !== id);
-  renderJobs();
+
+
+updateStats();
+
+document.addEventListener("click", function (event) {
+
+     const card = event.target.closest(".card");
+     if (!card) return;
+
+     if (event.target.closest(".interview")) {
+          interviewContainer.appendChild(card);
+          updateCardStatus(card, "INTERVIEW", "bg-[#D1FAE5]");
+          updateStats();
+     }
+
+     if (event.target.closest(".rejected")) {
+          rejectContainer.appendChild(card);
+          updateCardStatus(card, "REJECTED", "bg-[#fee2e2]");
+          updateStats();
+     }
+
+     if (event.target.closest(".delete")) {
+          card.remove();
+          updateStats();
+     }
+
+});
+
+function updateCardStatus(card, statusText, bgColor) {
+     const statusElement = card.querySelector(".ApplyStatus");
+     const interviewBtn = card.querySelector(".interview");
+     const rejectedBtn = card.querySelector(".rejected");
+
+
+     statusElement.textContent = statusText;
+     statusElement.className =
+          "ApplyStatus text-[#002C5C] font-medium inline-block px-5 py-3 mb-[8px] rounded-[4px] " + bgColor;
+
+
+     if (statusText === "INTERVIEW") {
+          interviewBtn.classList.add("hidden");
+          rejectedBtn.classList.remove("hidden");
+     }
+     if (statusText === "REJECTED") {
+          rejectedBtn.classList.add("hidden");
+          interviewBtn.classList.remove("hidden");
+     }
+     else {
+          interviewBtn.classList.d("hidden");
+          rejectedBtn.classList.remove("hidden");
+     }
 }
 
-function setFilter(value) {
-  filter = value;
-
-  document.getElementById("allBtn").className = "px-4 py-2 rounded";
-  document.getElementById("intBtn").className = "px-4 py-2 rounded";
-  document.getElementById("rejBtn").className = "px-4 py-2 rounded";
-
-  if (value === "ALL") {
-    document
-      .getElementById("allBtn")
-      .classList.add("bg-blue-600", "text-white");
-  }
-  if (value === "INTERVIEW") {
-    document
-      .getElementById("intBtn")
-      .classList.add("bg-blue-600", "text-white");
-  }
-  if (value === "REJECTED") {
-    document
-      .getElementById("rejBtn")
-      .classList.add("bg-blue-600", "text-white");
-  }
-
-  renderJobs();
-}
-
-function updateCounts() {
-  document.getElementById("totalCount").innerText = jobs.length;
-  document.getElementById("interviewCount").innerText = jobs.filter(
-    (j) => j.status === "INTERVIEW",
-  ).length;
-  document.getElementById("rejectedCount").innerText = jobs.filter(
-    (j) => j.status === "REJECTED",
-  ).length;
-  document.getElementById("jobCount").innerText = jobs.length + " jobs";
-}
-
-renderJobs();

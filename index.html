@@ -1,91 +1,466 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- ============ tailwind cdn ================ -->
-    <script src="https://cdn.tailwindcss.com"></script>
+<head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- =========== font awesome ============ -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
+     <!-- tailwindcss cdn -->
+     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
+     <!-- font awesome cdn -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+          integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+     <title>Job Application Tracker</title>
+</head>
 
-    <title>Job Application Tracker</title>
-  </head>
-
-  <body class="bg-[#f3f4f6]">
-    <div class="max-w-5xl mx-auto py-10 px-4">
-      <h1 class="text-3xl font-bold text-[#1e3a8a] mb-8">
-        Job Application Tracker
-      </h1>
-
-      <!-- =============== Stats ================= -->
-
-      <div class="grid md:grid-cols-3 gap-6 mb-10">
-        <div class="bg-white p-6 rounded-lg shadow">
-          <p class="text-gray-500">Total</p>
-          <h2 id="totalCount" class="text-2xl font-bold text-[#1e3a8a]">0</h2>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow">
-          <p class="text-gray-500">Interview</p>
-          <h2 id="interviewCount" class="text-2xl font-bold text-green-500">
-            0
+<body class="bg-[#edecf1]">
+     <section class="w-[80%] mx-auto">
+          <h2 class="text-4xl font-bold text-[#003366] pb-[25px] pt-[60px]">
+               Job Application Tracker
           </h2>
-        </div>
 
-        <div class="bg-white p-6 rounded-lg shadow">
-          <p class="text-gray-500">Rejected</p>
-          <h2 id="rejectedCount" class="text-2xl font-bold text-red-500">0</h2>
-        </div>
-      </div>
+          <div class="grid lg:grid-cols-3 md:grid-cols-1 gap-8">
+               <div class="bg-[#ffffff] p-4 rounded-[8px]">
+                    <p class="text-[#323B49]">Total</p>
+                    <p id="stat-total" class="text-[#002C5C] font-bold">0</p>
+               </div>
+               <div class="bg-[#ffffff] p-4 rounded-[8px]">
+                    <p class="text-[#323B49]">Interview</p>
+                    <p id="stat-interview" class="text-[#10B981] font-bold">0</p>
+               </div>
+               <div class="bg-[#ffffff] p-4 rounded-[8px]">
+                    <p class="text-[#323B49]">Rejected</p>
+                    <p id="stat-reject" class="text-[#EF4444] font-bold">0</p>
+               </div>
+          </div>
+          <br />
+          <hr class="border-0 h-[2px] bg-[#d4d9e3] " />
+          <br />
+     </section>
 
-      <hr class="border-0 h-[2px] bg-[#d4d9e3] mb-[12px]" />
+     <main class="w-[80%] mx-auto pb-[60px]">
+          <div class="flex justify-between items-center mb-4">
+               <h2 class="text-[#002C5C] font-bold">Available Jobs</h2>
+               <p id="available">0 jobs</p>
+          </div>
 
-      <!-- ================ Job Header ============== -->
+          <div class="flex gap-2 md:flex-row flex-col mb-6">
+               <button 
+                    onclick="switchTab('all')"
+                    id="tab-all"
+                    class="bg-blue-600 text-white px-6 py-2 border rounded-md cursor-pointer
+                    hover:bg-blue-100 hover:text-blue-600 transition duration-200">
+                    All
+               </button>
+               <button 
+                    onclick="switchTab('interview')"
+                    id="tab-interview"
+                    class="interview-btn bg-gray-300 px-6 py-2 border rounded-md cursor-pointer
+                    hover:bg-blue-100 hover:text-blue-600 transition duration-200">
+                    Interview
+               </button>
+               <button 
+                    onclick="switchTab('rejected')" 
+                    id="tab-rejected"
+                    class="bg-gray-300 text-slate-700 px-6 py-2 border rounded-md cursor-pointer 
+                    hover:bg-blue-100 hover:text-blue-600 transition duration-200">
+                    Rejected
+               </button>
+          </div>
 
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-semibold text-gray-700">Available Jobs</h2>
-        <p id="jobCount" class="text-gray-500 text-sm"></p>
-      </div>
+          <section id="interview-container" class="hidden"></section>
+          <section id="reject-container" class="hidden"></section>
 
-      <!-- ============= Filter Buttons ============ -->
+          <!-- =========== Empty statas ======= -->
+          <section id="empty-state" class="hidden flex flex-col items-center justify-center py-20 gap-4 text-center">
+               <div class="text-7xl opacity-50"><img src="jobs.png" alt=""></div>
+               <p class="font-syne text-lg font-bold text-nevy">No jobs available</p>
+               <p class="text-sm text-slate-400">Check back soon for new job opportunities</p>
+          </section>
 
-      <div class="flex gap-3 mb-6">
-        <button
-          onclick="setFilter('ALL')"
-          id="allBtn"
-          class="px-4 py-2 bg-blue-600 text-white rounded"
-        >
-          All
-        </button>
 
-        <button
-          onclick="setFilter('INTERVIEW')"
-          id="intBtn"
-          class="px-4 py-2 bg-gray-300 rounded"
-        >
-          Interview
-        </button>
 
-        <button
-          onclick="setFilter('REJECTED')"
-          id="rejBtn"
-          class="px-4 py-2 bg-gray-300 rounded"
-        >
-          Rejected
-        </button>
-      </div>
 
-      <!-- ========== Job Cards ====================== -->
-      <div id="jobContainer" class="space-y-6"></div>
-    </div>
+          <section id="jobs-container" class="allCards">
+               <!-- ============ card 1 ========================= -->
 
-    <script src="scriptn.js"></script>
-  </body>
+               <section
+                    class=" card bg-[#ffffff] p-6 rounded-[8px] mb-[20px]  hover:shadow-2xl hover:-translate-y-1">
+                    <div class="flex justify-between">
+                         <div>
+                              <h2 id="jobTitle" class="titleNode font-bold text-[#002C5C]">REVE Systems</h2>
+                              <p id="jobDes" class="jobTitle text-md text-[#64748B]">
+                                   React Native Developer
+                              </p>
+                         </div>
+                         <button class="delete group border border-[#b2bdce] px-3 py-2 text-[#64748B] rounded-full cursor-pointer transition-all duration-300 ease-in-out hover:border-red-500 hover:shadow-md">
+                              <i class="fa-regular fa-trash-can transition-all duration-300 group-hover:text-red-600 group-hover:scale-110 pointer-events-none"></i>
+                         </button>
+                    </div>
+                    <br />
+
+                    <div>
+                         <p class="typeOfJobs text-[#64748B]">Remote • Full-time • $130,000 - $175,000</p>
+                    </div>
+                    <br />
+
+                    <div>
+                         <h3
+                              class="ApplyStatus text-[#002C5C] font-medium bg-[#EEF4FF] inline-block px-5 py-3 mb-[8px] rounded-[4px]">
+                              NOT APPLIED
+                         </h3>
+                         <p class="jD text-[#323B49] mb-[20px]">
+                              Create stunning web experiences for high-profile clients. Must have
+                              portfolio and experience with modern web design trends.
+                         </p>
+                    </div>
+
+                    <div class="flex gap-2 md:flex-row flex-col">
+                         <button class="interview-btn interview border-[2px] border-[#10B981] bg-white text-[#10B981] font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#10B981] hover:text-white">
+                              Interview
+                         </button>
+                         <button class="rejected border-[2px] border-[#EF4444] text-[#EF4444] bg-white font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#EF4444] hover:text-white">
+                              Rejected
+                         </button>
+                    </div>
+               </section>
+          
+
+               <!-- ============== card 2 ========= -->
+
+               <section
+                    class="card bg-[#ffffff] p-6 rounded-[8px] mb-[20px] hover:shadow-2xl hover:-translate-y-1">
+                    <div class="flex justify-between">
+                         <div>
+                              <h2 id="jobTitle" class="font-bold text-[#002C5C]">
+                                   Enosis Solutions
+                              </h2>
+                              <p id="jobDes" class="text-md text-[#64748B]">Backend Developer</p>
+                         </div>
+                         <button class="delete group border border-[#b2bdce] px-3 py-2 text-[#64748B] rounded-full cursor-pointer transition-all duration-300 ease-in-out hover:border-red-500 hover:shadow-md">
+                              <i class="fa-regular fa-trash-can transition-all duration-300 group-hover:text-red-600 group-hover:scale-110 pointer-events-none"></i>
+                         </button>
+                    </div>
+                    <br />
+
+                    <div>
+                         <p class="text-[#64748B]">Remote • Full-time • $130,000 - $175,000</p>
+                    </div>
+                    <br />
+
+                    <div>
+                         <h3
+                              class="ApplyStatus text-[#002C5C] font-medium bg-[#EEF4FF] inline-block px-5 py-3 mb-[8px] rounded-[4px]">
+                              NOT APPLIED
+                         </h3>
+                         <p class="text-[#323B49] mb-[20px]">
+                              Create stunning web experiences for high-profile clients. Must have
+                              portfolio and experience with modern web design trends.
+                         </p>
+                    </div>
+
+                    <div class="flex gap-2 md:flex-row flex-col">
+                         <button class="interview border-[2px] border-[#10B981] bg-white text-[#10B981] font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#10B981] hover:text-white">
+                              Interview
+                         </button>
+                         <button class="rejected border-[2px] border-[#EF4444] text-[#EF4444] bg-white font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#EF4444] hover:text-white">
+                              Rejected
+                         </button>
+                    </div>
+               </section>
+
+               <!-- ================ card-3 ================= -->
+
+               <section
+                    class="card bg-[#ffffff] p-6 rounded-[8px] mb-[20px] hover:shadow-2xl hover:-translate-y-1">
+                    <div class="flex justify-between">
+                         <div>
+                              <h2 id="jobTitle" class="font-bold text-[#002C5C]">
+                                   Creative Minds Ltd.
+                              </h2>
+                              <p id="jobDes" class="text-md text-[#64748B]">UI/UX Designer</p>
+                         </div>
+                         <button class="delete group border border-[#b2bdce] px-3 py-2 text-[#64748B] rounded-full cursor-pointer transition-all duration-300 ease-in-out hover:border-red-500 hover:shadow-md">
+                              <i class="fa-regular fa-trash-can transition-all duration-300 group-hover:text-red-600 group-hover:scale-110 pointer-events-none"></i>
+                         </button>
+                    </div>
+                    <br />
+
+                    <div>
+                         <p class="text-[#64748B]">Remote • Full-time • $130,000 - $175,000</p>
+                    </div>
+                    <br />
+
+                    <div>
+                         <h3
+                              class="ApplyStatus text-[#002C5C] font-medium bg-[#EEF4FF] inline-block px-5 py-3 mb-[8px] rounded-[4px]">
+                              NOT APPLIED
+                         </h3>
+                         <p class="text-[#323B49] mb-[20px]">
+                              Create stunning web experiences for high-profile clients. Must have
+                              portfolio and experience with modern web design trends.
+                         </p>
+                    </div>
+
+                    <div class="flex gap-2 md:flex-row flex-col">
+                         <button class="interview border-[2px] border-[#10B981] bg-white text-[#10B981] font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#10B981] hover:text-white">
+                              Interview
+                         </button>
+                         <button class="rejected border-[2px] border-[#EF4444] text-[#EF4444] bg-white font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#EF4444] hover:text-white">
+                              Rejected
+                         </button>
+                    </div>
+               </section>
+
+               <!-- ========================== card 4 =================== -->
+
+               <section
+                    class="card bg-[#ffffff] p-6 rounded-[8px] mb-[20px] hover:shadow-2xl hover:-translate-y-1">
+                    <div class="flex justify-between">
+                         <div>
+                              <h2 id="jobTitle" class="font-bold text-[#002C5C]">
+                                   Tech Solutions Ltd.
+                              </h2>
+                              <p id="jobDes" class="text-md text-[#64748B]">
+                                   Web Application Developer
+                              </p>
+                         </div>
+                         <button class="delete group border border-[#b2bdce] px-3 py-2 text-[#64748B] rounded-full cursor-pointer transition-all duration-300 ease-in-out hover:border-red-500 hover:shadow-md">
+                              <i class="fa-regular fa-trash-can transition-all duration-300 group-hover:text-red-600 group-hover:scale-110 pointer-events-none"></i>
+                         </button>
+                    </div>
+                    <br />
+
+                    <div>
+                         <p class="text-[#64748B]">Remote • Full-time • $130,000 - $175,000</p>
+                    </div>
+                    <br />
+
+                    <div>
+                         <h3
+                              class="ApplyStatus text-[#002C5C] font-medium bg-[#EEF4FF] inline-block px-5 py-3 mb-[8px] rounded-[4px]">
+                              NOT APPLIED
+                         </h3>
+                         <p class="text-[#323B49] mb-[20px]">
+                              Create stunning web experiences for high-profile clients. Must have
+                              portfolio and experience with modern web design trends.
+                         </p>
+                    </div>
+
+                    <div class="flex gap-2 md:flex-row flex-col">
+                         <button class="interview border-[2px] border-[#10B981] bg-white text-[#10B981] font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#10B981] hover:text-white">
+                              Interview
+                         </button>
+                         <button class="rejected border-[2px] border-[#EF4444] text-[#EF4444] bg-white font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#EF4444] hover:text-white">
+                              Rejected
+                         </button>
+                    </div>
+               </section>
+
+               <!-- ========================== card 5 =================== -->
+
+               <section
+                    class="card bg-[#ffffff] p-6 rounded-[8px] mb-[20px] hover:shadow-2xl hover:-translate-y-1">
+                    <div class="flex justify-between">
+                         <div>
+                              <h2 id="jobTitle" class="font-bold text-[#002C5C]">
+                                   DataSoft Systems Bangladesh Limited
+                              </h2>
+                              <p id="jobDes" class="text-md text-[#64748B]">
+                                   JavaScript Developer
+                              </p>
+                         </div>
+                         <button class="delete group border border-[#b2bdce] px-3 py-2 text-[#64748B] rounded-full cursor-pointer transition-all duration-300 ease-in-out hover:border-red-500 hover:shadow-md">
+                              <i class="fa-regular fa-trash-can transition-all duration-300 group-hover:text-red-600 group-hover:scale-110 pointer-events-none"></i>
+                         </button>
+                    </div>
+                    <br />
+
+                    <div>
+                         <p class="text-[#64748B]">Remote • Full-time • $130,000 - $175,000</p>
+                    </div>
+                    <br />
+
+                    <div>
+                         <h3
+                              class="ApplyStatus text-[#002C5C] font-medium bg-[#EEF4FF] inline-block px-5 py-3 mb-[8px] rounded-[4px]">
+                              NOT APPLIED
+                         </h3>
+                         <p class="text-[#323B49] mb-[20px]">
+                              Create stunning web experiences for high-profile clients. Must have
+                              portfolio and experience with modern web design trends.
+                         </p>
+                    </div>
+
+                    <div class="flex gap-2 md:flex-row flex-col">
+                         <button class="interview border-[2px] border-[#10B981] bg-white text-[#10B981] font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#10B981] hover:text-white">
+                              Interview
+                         </button>
+                         <button class="rejected border-[2px] border-[#EF4444] text-[#EF4444] bg-white font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#EF4444] hover:text-white">
+                              Rejected
+                         </button>
+                    </div>
+               </section>
+
+               <!-- ========================== card 6 =================== -->
+
+               <section
+                    class="card bg-[#ffffff] p-6 rounded-[8px] mb-[20px] hover:shadow-2xl hover:-translate-y-1">
+                    <div class="flex justify-between">
+                         <div>
+                              <h2 id="jobTitle" class="font-bold text-[#002C5C]">TigerIT</h2>
+                              <p id="jobDes" class="text-md text-[#64748B]">
+                                   Mobile App Develope
+                              </p>
+                         </div>
+                         <button class="delete group border border-[#b2bdce] px-3 py-2 text-[#64748B] rounded-full cursor-pointer transition-all duration-300 ease-in-out hover:border-red-500 hover:shadow-md">
+                              <i class="fa-regular fa-trash-can transition-all duration-300 group-hover:text-red-600 group-hover:scale-110 pointer-events-none"></i>
+                         </button>
+                    </div>
+                    <br />
+
+                    <div>
+                         <p class="text-[#64748B]">Remote • Full-time • $130,000 - $175,000</p>
+                    </div>
+                    <br />
+
+                    <div>
+                         <h3
+                              class="ApplyStatus text-[#002C5C] font-medium bg-[#EEF4FF] inline-block px-5 py-3 mb-[8px] rounded-[4px]">
+                              NOT APPLIED
+                         </h3>
+                         <p class="text-[#323B49] mb-[20px]">
+                              Create stunning web experiences for high-profile clients. Must have
+                              portfolio and experience with modern web design trends.
+                         </p>
+                    </div>
+
+                    <div class="flex gap-2 md:flex-row flex-col">
+                         <button class="interview border-[2px] border-[#10B981] bg-white text-[#10B981] font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#10B981] hover:text-white">
+                              Interview
+                         </button>
+                         <button class="rejected border-[2px] border-[#EF4444] text-[#EF4444] bg-white font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#EF4444] hover:text-white">
+                              Rejected
+                         </button>
+                    </div>
+               </section>
+
+               <!-- ========================== card 7 =================== -->
+
+               <section
+                    class="card bg-[#ffffff] p-6 rounded-[8px] mb-[20px] hover:shadow-2xl hover:-translate-y-1">
+                    <div class="flex justify-between">
+                         <div>
+                              <h2 id="jobTitle" class="font-bold text-[#002C5C]">BJIT</h2>
+                              <p id="jobDes" class="text-md text-[#64748B]">
+                                   Full Stack Developer
+                              </p>
+                         </div>
+                         <button class="delete group border border-[#b2bdce] px-3 py-2 text-[#64748B] rounded-full cursor-pointer transition-all duration-300 ease-in-out hover:border-red-500 hover:shadow-md">
+                              <i class="fa-regular fa-trash-can transition-all duration-300 group-hover:text-red-600 group-hover:scale-110 pointer-events-none"></i>
+                         </button>
+                    </div>
+                    <br />
+
+                    <div>
+                         <p class="text-[#64748B]">Remote • Full-time • $130,000 - $175,000</p>
+                    </div>
+                    <br />
+
+                    <div>
+                         <h3
+                              class="ApplyStatus text-[#002C5C] font-medium bg-[#EEF4FF] inline-block px-5 py-3 mb-[8px] rounded-[4px]">
+                              NOT APPLIED
+                         </h3>
+                         <p class="text-[#323B49] mb-[20px]">
+                              Create stunning web experiences for high-profile clients. Must have
+                              portfolio and experience with modern web design trends.
+                         </p>
+                    </div>
+
+                    <div class="flex gap-2 md:flex-row flex-col">
+                         <button class="interview border-[2px] border-[#10B981] bg-white text-[#10B981] font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#10B981] hover:text-white">
+                              Interview
+                         </button>
+                         <button class="rejected border-[2px] border-[#EF4444] text-[#EF4444] bg-white font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#EF4444] hover:text-white">
+                              Rejected
+                         </button>
+                    </div>
+               </section>
+
+               <!-- ========================== card 8 =================== -->
+
+               <section
+                    class="card bg-[#ffffff] p-6 rounded-[8px] mb-[20px] hover:shadow-2xl hover:-translate-y-1">
+                    <div class="flex justify-between">
+                         <div>
+                              <h2 id="jobTitle" class="font-bold text-[#002C5C]">
+                                   Brain Station 23
+                              </h2>
+                              <p id="jobDes" class="text-md text-[#64748B]">
+                                   Client-Side Application Developer
+                              </p>
+                         </div>
+                         
+                         <button class="delete group border border-[#b2bdce] px-3 py-2 text-[#64748B] rounded-full cursor-pointer transition-all duration-300 ease-in-out hover:border-red-500 hover:shadow-md">
+                              <i class="fa-regular fa-trash-can transition-all duration-300 group-hover:text-red-600 group-hover:scale-110 pointer-events-none"></i>
+                         </button>
+                    </div>
+                    <br />
+
+                    <div>
+                         <p class="text-[#64748B]">Remote • Full-time • $130,000 - $175,000</p>
+                    </div>
+                    <br />
+
+                    <div>
+                         <h3
+                              class="ApplyStatus text-[#002C5C] font-medium bg-[#EEF4FF] inline-block px-5 py-3 mb-[8px] rounded-[4px]">
+                              NOT APPLIED
+                         </h3>
+                         <p class="text-[#323B49] mb-[20px]">
+                              Create stunning web experiences for high-profile clients. Must have
+                              portfolio and experience with modern web design trends.
+                         </p>
+                    </div>
+
+                    <div class="flex gap-2 md:flex-row flex-col">
+                         <button class="interview border-[2px] border-[#10B981] bg-white text-[#10B981] font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#10B981] hover:text-white">
+                              Interview
+                         </button>
+                         <button class="rejected border-[2px] border-[#EF4444] text-[#EF4444] bg-white font-bold px-6 py-2 rounded-md cursor-pointer transition-all duration-300
+                   hover:bg-[#EF4444] hover:text-white">
+                              Rejected
+                         </button>
+                    </div>
+               </section>
+
+
+
+          </section>
+     </main>
+
+     <script src="./script.js"></script>
+</body>
+
 </html>
+

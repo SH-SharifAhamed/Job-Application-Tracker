@@ -174,16 +174,16 @@ function updateCardStatus(card, statusText, bgColor) {
 
 
      if (statusText === "INTERVIEW") {
-          interviewBtn.classList.add("hidden");
-          rejectedBtn.classList.remove("hidden");
+          // interviewBtn.classList.add("hidden");
+          // rejectedBtn.classList.remove("hidden");
      }
      if (statusText === "REJECTED") {
-          rejectedBtn.classList.add("hidden");
-          interviewBtn.classList.remove("hidden");
+          // rejectedBtn.classList.add("hidden");
+          // interviewBtn.classList.remove("hidden");
      }
      else {
-          interviewBtn.classList.d("hidden");
-          rejectedBtn.classList.remove("hidden");
+          // interviewBtn.classList.add("hidden");
+          // rejectedBtn.classList.remove("hidden");
      }
 }
 
